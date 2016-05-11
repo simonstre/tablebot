@@ -1,0 +1,40 @@
+extends layout
+
+block content
+  div.page-header
+    h3 Configuration
+
+  form.form-horizontal(action='/configuration', method='POST')
+    .form-group
+      label.col-sm-3.control-label(for='time') Time
+      .col-sm-7
+        input.form-control.time#time(name='time', type="text", value=configuration.time)
+
+    .form-group
+      label.col-sm-3.control-label(for='time') Answer delay
+      .col-sm-7
+        input.form-control.time#answer-delay(name='answerdelaymin', type="number", value=configuration.answerdelaymin)
+
+    mixin games( name, label, value )
+      .form-group
+        label.col-sm-3.control-label(for=name) #{label}
+        .col-sm-7
+          input.form-control(id=name, type='text', name=name, value=value.toString())
+
+    +games( 'twoplayersgames', 'Two players games', configuration.twoplayersgames )
+
+    +games( 'threeplayersgames', 'Three players games', configuration.threeplayersgames )
+
+    +games( 'fourplayersgames', 'Four players games', configuration.fourplayersgames )
+
+    +games( 'fiveplayersgames', 'Five players games', configuration.fiveplayersgames )
+
+    +games( 'sixplayersgames', 'Six players games', configuration.sixplayersgames )
+
+    +games( 'sevenplayersgames', 'Seven players games', configuration.sevenplayersgames )
+
+    .form-group
+      .col-sm-offset-3.col-sm-4
+        button.btn.btn.btn-primary(type='submit')
+          i.fa.fa-pencil
+          | Save configuration
