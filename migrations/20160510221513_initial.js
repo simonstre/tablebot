@@ -22,7 +22,7 @@ exports.up = function ( knex, promise ) {
      knex.schema.createTable( 'games', function ( t ) {
         t.increments();
         t.integer( 'players' ).defaultTo( '0' ).notNullable();
-        t.timestamp( 'date' ).defaultTo( 'now()' ).notNullable();
+        t.timestamp( 'date' ).defaultTo( knex.raw('now()') ).notNullable();
         t.text( 'messageid' ).notNullable();
         t.text( 'channelid' ).notNullable();
     } )] );
