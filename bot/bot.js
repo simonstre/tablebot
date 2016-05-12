@@ -116,7 +116,11 @@ var updatePlayers = function ( event, fn ) {
 
 bot.botkit.on( 'reaction_added', function ( bot, event ) {
     updatePlayers( event, function ( players ) {
-        return players + 1;
+        if (event.reaction === "+1") { // this is silly, but yeah, it '+1' here and not thumbsup.
+            return players + 1;
+        } else {
+            return players;
+        }
     } )
 } );
 
