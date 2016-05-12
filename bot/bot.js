@@ -105,9 +105,10 @@ var updatePlayers = function ( event, fn ) {
 
         if ( channel && event.item.type === 'message' && event.user !== botId ) {
             database.getLatestGame( channel.id, function ( err, game ) {
-                var players = fn( game.players );
-                database.updateGame( game.id, players, function ( err, result ) {
-                } )
+                if (event.item.ts === game.messageid ) {
+                    var players = fn( game.players );
+                    database.updateGame( game.id, players, function ( err, result ) { });
+                }
             } );
         }
     } );
