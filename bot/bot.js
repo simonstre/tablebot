@@ -103,7 +103,7 @@ var updatePlayers = function ( event, fn ) {
     bot.api.channels.list( {}, function ( err, response ) {
         var channel = _.find( response.channels, ['id', event.item.channel] );
 
-        if ( channel && event.item.type === 'message' && event.user !== botId ) {
+        if ( channel && !channel.is_general && event.item.type === 'message' && event.user !== botId ) {
             database.getLatestGame( channel.id, function ( err, game ) {
                 if ( event.item.ts === game.messageid ) {
                     var players = fn( game.players );
