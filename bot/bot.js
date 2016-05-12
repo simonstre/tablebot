@@ -30,67 +30,63 @@ new CronJob( '* * * * *', function () {
             var match = /(\d\d):(\d\d):(\d\d)/.exec( configuration.time );
             var hours = match[1];
             var minutes = match[2];
+            var configurationMinutes = +hours * 60 + +minutes;
 
-            var date = new Date();
+            var currentDate = new Date();
+            var currentMinutes = +currentDate.getHours() * 60 + +currentDate.getMinutes();
 
             var channels = response.channels.filter( function ( channel ) {
                 return channel.is_member && !channel.is_general;
             } );
 
             async.each( channels, function ( channel, callback ) {
-                if ( date.getHours() == hours ) {
-                    if ( date.getMinutes() == minutes ) {
-                        var message = i18n.__( 'Howdy %s! Click :+1: to play, I will suggest a game in %s minutes.', channel.name, configuration.answerdelaymin );
+                if ( currentMinutes == configurationMinutes ) {
+                    var message = i18n.__( 'Howdy %s! Click :+1: to play, I will suggest a game in %s minutes.', channel.name, configuration.answerdelaymin );
 
-                        bot.api.chat.postMessage( {
-                            channel: channel.id, text: message, as_user: 'true'
-                        }, function ( err, messageResponse ) {
-                            bot.api.reactions.add( {channel: channel.id, timestamp: messageResponse.ts, name: 'thumbsup'}, function ( err, reactionResponse ) {
-                                database.createGame( messageResponse.ts, channel.id, function ( err, result ) {
-                                    if ( err ) {
-                                        console.error( err );
-                                    }
-                                    callback();
-                                } );
-                            } );
-                        } );
-                    } else if ( date.getMinutes() == (+minutes + +configuration.answerdelaymin) ) {
-                        database.getLatestGame( channel.id, function ( err, game ) {
-                            var message;
-
-                            if ( game.players == 0 ) {
-                                message = i18n.__( 'Time\'s up! Hello? Is there anybody in there?' ) + ' :spider_web:';
-                            } else if ( game.players == 1 ) {
-                                message = i18n.__( 'Time\'s up! Hmm, do you know solitaire?' ) + ' :spades::clubs::hearts::diamonds:';
-                            } else if ( game.players > 7 ) {
-
-                            } else {
-                                var games = switchPlayers( game.players, configuration );
-
-                                if ( _.isEmpty( games ) ) {
-                                    message = i18n.__( 'Time\'s up! You should add games for %s players!', game.players );
-                                } else {
-                                    var randomGame = _.sample( games );
-
-                                    console.log( randomGame );
-
-                                    message = i18n.__( 'Time\'s up, you should play %s!', randomGame );
+                    bot.api.chat.postMessage( {
+                        channel: channel.id, text: message, as_user: 'true'
+                    }, function ( err, messageResponse ) {
+                        bot.api.reactions.add( {channel: channel.id, timestamp: messageResponse.ts, name: 'thumbsup'}, function ( err, reactionResponse ) {
+                            database.createGame( messageResponse.ts, channel.id, function ( err, result ) {
+                                if ( err ) {
+                                    console.error( err );
                                 }
-                            }
-
-                            bot.api.chat.postMessage( {
-                                channel: channel.id, text: message, as_user: 'true'
-                            }, function ( err, response ) {
                                 callback();
                             } );
                         } );
-                    }
+                    } );
+                } else if ( currentMinutes == (+configurationMinutes + +configuration.answerdelaymin) ) {
+                    database.getLatestGame( channel.id, function ( err, game ) {
+                        var message;
+
+                        if ( game.players == 0 ) {
+                            message = i18n.__( 'Time\'s up! Hello? Is there anybody in there?' ) + ' :spider_web:';
+                        } else if ( game.players == 1 ) {
+                            message = i18n.__( 'Time\'s up! Hmm, do you know solitaire?' ) + ' :spades::clubs::hearts::diamonds:';
+                        } else if ( game.players > 7 ) {
+
+                        } else {
+                            var games = switchPlayers( game.players, configuration );
+
+                            if ( _.isEmpty( games ) ) {
+                                message = i18n.__( 'Time\'s up! You should add games for %s players!', game.players );
+                            } else {
+                                var randomGame = _.sample( games );
+
+                                message = i18n.__( 'Time\'s up, you should play %s!', randomGame );
+                            }
+                        }
+
+                        bot.api.chat.postMessage( {
+                            channel: channel.id, text: message, as_user: 'true'
+                        }, function ( err, response ) {
+                            callback();
+                        } );
+                    } );
                 }
             } );
         } )
     } );
-
-
 }, null, true, 'America/Montreal' );
 
 var botId;
