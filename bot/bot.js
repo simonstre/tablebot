@@ -40,7 +40,7 @@ new CronJob( '* * * * *', function () {
             async.each( channels, function ( channel, callback ) {
                 if ( date.getHours() == hours ) {
                     if ( date.getMinutes() == minutes ) {
-                        var message = i18n.__( 'Howdy %s! Click :+1: to play, I will suggest a game in 15 minutes.', channel.name );
+                        var message = i18n.__( 'Howdy %s! Click :+1: to play, I will suggest a game in %s minutes.', channel.name, configuration.answerdelaymin );
 
                         bot.api.chat.postMessage( {
                             channel: channel.id, text: message, as_user: 'true'
