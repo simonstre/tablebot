@@ -46,7 +46,7 @@ new CronJob( '* * * * *', function () {
                     bot.api.chat.postMessage( {
                         channel: channel.id, text: message, as_user: 'true'
                     }, function ( err, messageResponse ) {
-                        bot.api.reactions.add( {channel: channel.id, timestamp: messageResponse.ts, name: 'thumbsup'}, function ( err, reactionResponse ) {
+                        bot.api.reactions.add( {channel: channel.id, timestamp: messageResponse.ts, name: '+1'}, function ( err, reactionResponse ) {
                             database.createGame( messageResponse.ts, channel.id, function ( err, result ) {
                                 if ( err ) {
                                     console.error( err );
@@ -99,11 +99,12 @@ var updatePlayers = function ( event, fn ) {
     bot.api.channels.list( {}, function ( err, response ) {
         var channel = _.find( response.channels, ['id', event.item.channel] );
 
-        if ( channel && !channel.is_general && event.item.type === 'message' && event.user !== botId ) {
+        if ( channel && !channel.is_general && event.item.type === 'message' && event.user !== botId && event.reaction === "+1" ) {
             database.getLatestGame( channel.id, function ( err, game ) {
                 if ( event.item.ts === game.messageid ) {
                     var players = fn( game.players );
-                    database.updateGame( game.id, players, function ( err, result ) { } );
+                    database.updateGame( game.id, players, function ( err, result ) {
+                    } );
                 }
             } );
         }
@@ -112,11 +113,7 @@ var updatePlayers = function ( event, fn ) {
 
 bot.botkit.on( 'reaction_added', function ( bot, event ) {
     updatePlayers( event, function ( players ) {
-        if (event.reaction === "+1") { // this is silly, but yeah, it '+1' here and not thumbsup.
-            return players + 1;
-        } else {
-            return players;
-        }
+        return players + 1;
     } )
 } );
 
