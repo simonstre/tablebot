@@ -1,0 +1,31 @@
+{
+    "name": "tablebot",
+    "description": "A Slack bot to organize your board game plays.",
+    "repository": "git://github.com/simonstre/tablebot.git",
+    "logo": "https://hubot.github.com/assets/images/layout/hubot-avatar@2x.png",
+    "keywords": [
+        "slack",
+        "bot",
+        "boardgame",
+        "game",
+        "heroku"
+    ],
+    "addons": [
+        "heroku-postgresql:hobby-dev"
+    ],
+    "env": {
+        "SLACK_API_TOKEN": {
+            "description": "slack Token",
+            "required": true
+        },
+        "POSTGRES_URL": {
+            "description": "Postgress url",
+            "required": true
+        }
+    },
+    "buildpacks": [
+        {
+            "url": "https://github.com/heroku/heroku-buildpack-nodejs"
+        }
+    ]
+}
